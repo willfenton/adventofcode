@@ -69,17 +69,17 @@ class Day10(override val filename: String) : Solver {
         bfsMainLoop(bigGrid)
         bfsOutsideMainLoop(bigGrid)
 
+        for (tile in grid.values) {
+            val bigGridTile = bigGrid[Point(tile.p.x * 3, tile.p.y * 3)]!!
+            tile.isEnclosed = bigGridTile.isEnclosed
+        }
+
         println("Big grid:")
         printGrid(bigGrid)
         println("Big grid, showing enclosed:")
         printGrid(bigGrid, showEnclosed = true)
         println("Grid, showing enclosed:")
         printGrid(grid, showEnclosed = true)
-
-        for (tile in grid.values) {
-            val bigGridTile = bigGrid[Point(tile.p.x * 3, tile.p.y * 3)]!!
-            tile.isEnclosed = bigGridTile.isEnclosed
-        }
 
         return grid.values.count { it.isEnclosed && it.distanceFromStartingPoint == null }.toString()
     }
