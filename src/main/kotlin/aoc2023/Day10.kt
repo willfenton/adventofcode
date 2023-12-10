@@ -45,39 +45,42 @@ data class Tile(val p: Point, val tileType: TileType) {
 
 class Day10(override val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
-    private val grid: Grid<Tile>
-    private val bigGrid: Grid<Tile>
+    private lateinit var grid: Grid<Tile>
+    private lateinit var bigGrid: Grid<Tile>
 
-    init {
+    override fun solvePart1(): String {
         grid = parseGrid()
         addExtraGroundTilesToOutsideEdges(grid)
-
-        bigGrid = makeBigGrid()
-        addExtraGroundTilesToOutsideEdges(bigGrid)
 
         bfsMainLoop(grid)
         bfsOutsideMainLoop(grid)
 
+        println("Grid:")
+        printGrid(grid)
+
+        val mainLoopTiles = grid.values.filter { it.distanceFromStartingPoint != null }
+        return mainLoopTiles.maxOf { it.distanceFromStartingPoint!! }.toString()
+    }
+
+    override fun solvePart2(): String {
+        bigGrid = makeBigGrid()
+        addExtraGroundTilesToOutsideEdges(bigGrid)
+
         bfsMainLoop(bigGrid)
         bfsOutsideMainLoop(bigGrid)
+
+        println("Big grid:")
+        printGrid(bigGrid)
+        println("Big grid, showing enclosed:")
+        printGrid(bigGrid, showEnclosed = true)
+        println("Grid, showing enclosed:")
+        printGrid(grid, showEnclosed = true)
 
         for (tile in grid.values) {
             val bigGridTile = bigGrid[Point(tile.p.x * 3, tile.p.y * 3)]!!
             tile.isEnclosed = bigGridTile.isEnclosed
         }
 
-//        printGrid(grid)
-//        printGrid(grid, showEnclosed = true)
-//        printGrid(bigGrid)
-//        printGrid(bigGrid, showEnclosed = true)
-    }
-
-    override fun solvePart1(): String {
-        val mainLoopTiles = grid.values.filter { it.distanceFromStartingPoint != null }
-        return mainLoopTiles.maxOf { it.distanceFromStartingPoint!! }.toString()
-    }
-
-    override fun solvePart2(): String {
         return grid.values.count { it.isEnclosed && it.distanceFromStartingPoint == null }.toString()
     }
 
