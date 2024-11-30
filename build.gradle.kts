@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "2.1.0"
     application
-    id("org.jlleitschuh.gradle.ktlint") version "12.0.2"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 }
 
 group = "org.example"
@@ -20,7 +20,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(23)
 }
 
 application {
@@ -39,10 +39,6 @@ tasks.withType<JavaExec> {
     jvmArgs("-ea")
 }
 
-configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    additionalEditorconfig.set(
-        mapOf(
-            "max_line_length" to "200",
-        ),
-    )
+ktlint {
+    version.set("1.4.1")
 }

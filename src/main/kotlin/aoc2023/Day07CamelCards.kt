@@ -25,11 +25,12 @@ data class Hand(val cards: String, val bid: Int) {
         var jokerPermutations: List<List<String>> = listOf(cardListWithoutJokers)
         val allCardsExceptJokers = listOf("A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2")
         repeat(numJokers) {
-            val newJokerPermutations = jokerPermutations.map { cardList ->
-                allCardsExceptJokers.map { card ->
-                    cardList + card
-                }
-            }.flatten()
+            val newJokerPermutations = jokerPermutations
+                .map { cardList ->
+                    allCardsExceptJokers.map { card ->
+                        cardList + card
+                    }
+                }.flatten()
             jokerPermutations = newJokerPermutations
         }
 
@@ -52,16 +53,24 @@ fun handType(cardList: List<String>): Type {
 
     val values = countByCard.values.sortedDescending().toList()
 
-    return if (values.contains(5)) { Type.FIVE_OF_A_KIND }
-    else if (values.contains(4)) { Type.FOUR_OF_A_KIND }
-    else if (values == listOf(3, 2)) { Type.FULL_HOUSE }
-    else if (values.contains(3)) { Type.THREE_OF_A_KIND }
-    else if (values == listOf(2, 2, 1)) { Type.TWO_PAIR }
-    else if (values.contains(2)) { Type.ONE_PAIR }
-    else { Type.HIGH_CARD }
+    return if (values.contains(5)) {
+        Type.FIVE_OF_A_KIND
+    } else if (values.contains(4)) {
+        Type.FOUR_OF_A_KIND
+    } else if (values == listOf(3, 2)) {
+        Type.FULL_HOUSE
+    } else if (values.contains(3)) {
+        Type.THREE_OF_A_KIND
+    } else if (values == listOf(2, 2, 1)) {
+        Type.TWO_PAIR
+    } else if (values.contains(2)) {
+        Type.ONE_PAIR
+    } else {
+        Type.HIGH_CARD
+    }
 }
 
-class Day07CamelCards(override val filename: String) : Solver {
+class Day07CamelCards(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private val hands = input
         .map { it.split(" ") }
@@ -81,16 +90,18 @@ class Day07CamelCards(override val filename: String) : Solver {
             "5" to 10,
             "4" to 11,
             "3" to 12,
-            "2" to 13,
+            "2" to 13
         )
 
-        val orderedHands = hands.sortedWith(compareBy<Hand> { handType(it.cardList) }
-            .thenBy { cardValues[it.cardList[0]]!! }
-            .thenBy { cardValues[it.cardList[1]]!! }
-            .thenBy { cardValues[it.cardList[2]]!! }
-            .thenBy { cardValues[it.cardList[3]]!! }
-            .thenBy { cardValues[it.cardList[4]]!! }
-        ).reversed()
+        val orderedHands = hands
+            .sortedWith(
+                compareBy<Hand> { handType(it.cardList) }
+                    .thenBy { cardValues[it.cardList[0]]!! }
+                    .thenBy { cardValues[it.cardList[1]]!! }
+                    .thenBy { cardValues[it.cardList[2]]!! }
+                    .thenBy { cardValues[it.cardList[3]]!! }
+                    .thenBy { cardValues[it.cardList[4]]!! }
+            ).reversed()
 
         val totalWinnings = orderedHands.withIndex().sumOf { (index, hand) -> hand.bid * (index + 1) }
 
@@ -111,16 +122,18 @@ class Day07CamelCards(override val filename: String) : Solver {
             "4" to 10,
             "3" to 11,
             "2" to 12,
-            "J" to 13,
+            "J" to 13
         )
 
-        val orderedHands = hands.sortedWith(compareBy<Hand> { it.typeWithWildcards }
-            .thenBy { cardValues[it.cardList[0]]!! }
-            .thenBy { cardValues[it.cardList[1]]!! }
-            .thenBy { cardValues[it.cardList[2]]!! }
-            .thenBy { cardValues[it.cardList[3]]!! }
-            .thenBy { cardValues[it.cardList[4]]!! }
-        ).reversed()
+        val orderedHands = hands
+            .sortedWith(
+                compareBy<Hand> { it.typeWithWildcards }
+                    .thenBy { cardValues[it.cardList[0]]!! }
+                    .thenBy { cardValues[it.cardList[1]]!! }
+                    .thenBy { cardValues[it.cardList[2]]!! }
+                    .thenBy { cardValues[it.cardList[3]]!! }
+                    .thenBy { cardValues[it.cardList[4]]!! }
+            ).reversed()
 
         val totalWinnings = orderedHands.withIndex().sumOf { (index, hand) -> hand.bid * (index + 1) }
 

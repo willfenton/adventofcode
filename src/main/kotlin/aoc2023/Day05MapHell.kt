@@ -8,9 +8,7 @@ import kotlin.math.min
 // https://adventofcode.com/2023/day/5
 
 data class RangeMap(val sourceRange: LongRange, val destinationRange: LongRange) {
-    fun map(n: Long): Long {
-        return (n - sourceRange.first) + (destinationRange.first)
-    }
+    fun map(n: Long): Long = (n - sourceRange.first) + (destinationRange.first)
 
     fun mapRange(range: LongRange): LongRange? {
         if (range.first > sourceRange.last) return null
@@ -57,7 +55,7 @@ fun List<RangeMap>.mapRange(ranges: List<LongRange>): List<LongRange> {
     return mappedRanges + unmappableRanges
 }
 
-class Day05MapHell(override val filename: String) : Solver {
+class Day05MapHell(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private val sections: List<List<RangeMap>> = parseSections()
 
@@ -104,11 +102,11 @@ class Day05MapHell(override val filename: String) : Solver {
         .drop(2)
         .joinToString("|")
         .split("||")
-        .map { section -> section
-            .substringAfter("|")
-            .split("|")
-        }
-        .map { section -> parseSection(section) }
+        .map { section ->
+            section
+                .substringAfter("|")
+                .split("|")
+        }.map { section -> parseSection(section) }
 
     private fun parseSection(map: List<String>): List<RangeMap> = map.map { line ->
         val (destRangeStart, sourceRangeStart, rangeLength) = line

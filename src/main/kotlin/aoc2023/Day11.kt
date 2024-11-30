@@ -8,14 +8,16 @@ import kotlin.math.abs
 
 data class Planet(var x: Long, var y: Long)
 
-class Day11(override val filename: String) : Solver {
+class Day11(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
 
-    private val planets: List<Planet> = input.mapIndexed { y, line ->
-        line.split("").filter { it.isNotBlank() }.mapIndexedNotNull { x, s ->
-            if (s == "#") Planet(x.toLong(), y.toLong()) else null
-        }
-    }.flatten().toMutableList()
+    private val planets: List<Planet> = input
+        .mapIndexed { y, line ->
+            line.split("").filter { it.isNotBlank() }.mapIndexedNotNull { x, s ->
+                if (s == "#") Planet(x.toLong(), y.toLong()) else null
+            }
+        }.flatten()
+        .toMutableList()
 
     override fun solvePart1() = allDistances(expandUniverse(2)).sum().toString()
 
@@ -48,16 +50,14 @@ class Day11(override val filename: String) : Solver {
     private fun allDistances(planets: List<Planet>): List<Long> {
         val distances = mutableListOf<Long>()
         for (i in planets.indices) {
-            for (j in i+1..<planets.size) {
+            for (j in i + 1..<planets.size) {
                 distances.add(distanceBetweenPlanets(planets[i], planets[j]))
             }
         }
         return distances
     }
 
-    private fun distanceBetweenPlanets(p1: Planet, p2: Planet): Long {
-        return abs(p1.x - p2.x) + abs(p1.y - p2.y)
-    }
+    private fun distanceBetweenPlanets(p1: Planet, p2: Planet): Long = abs(p1.x - p2.x) + abs(p1.y - p2.y)
 }
 
 fun main() {

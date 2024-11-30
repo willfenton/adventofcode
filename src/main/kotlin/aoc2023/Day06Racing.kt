@@ -5,12 +5,20 @@ import Solver
 
 // https://adventofcode.com/2023/day/6
 
-class Day06Racing(override val filename: String) : Solver {
+class Day06Racing(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
 
     override fun solvePart1(): String {
-        val times = input[0].substringAfter(":").trim().split(Regex("\\s+")).map { it.toLong() }
-        val records = input[1].substringAfter(":").trim().split(Regex("\\s+")).map { it.toLong() }
+        val times = input[0]
+            .substringAfter(":")
+            .trim()
+            .split(Regex("\\s+"))
+            .map { it.toLong() }
+        val records = input[1]
+            .substringAfter(":")
+            .trim()
+            .split(Regex("\\s+"))
+            .map { it.toLong() }
 
         var result = 1
         for ((time, record) in times.zip(records)) {

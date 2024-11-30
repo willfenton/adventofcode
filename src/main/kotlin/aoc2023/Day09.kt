@@ -5,11 +5,12 @@ import Solver
 
 // https://adventofcode.com/2023/day/9
 
-class Day09(override val filename: String) : Solver {
+class Day09(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
-    private val sequences = input.map { line -> line
-        .split(Regex("\\s+"))
-        .map { it.toInt() }
+    private val sequences = input.map { line ->
+        line
+            .split(Regex("\\s+"))
+            .map { it.toInt() }
     }
 
     override fun solvePart1() = sequences.sumOf { nextValueInSequence(it) }.toString()
@@ -17,7 +18,7 @@ class Day09(override val filename: String) : Solver {
     override fun solvePart2() = sequences.sumOf { nextValueInSequence(it.reversed()) }.toString()
 
     private fun nextValueInSequence(sequence: List<Int>): Int {
-        if (sequence.all { it == 0 }) { return 0 }
+        if (sequence.all { it == 0 }) return 0
         val differences = sequence.windowed(2).map { (l, r) -> r - l }
         return sequence.last() + nextValueInSequence(differences)
     }

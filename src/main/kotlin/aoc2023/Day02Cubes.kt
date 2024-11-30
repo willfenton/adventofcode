@@ -9,7 +9,7 @@ data class Game(val id: Int, val numberColourPairs: List<NumberColourPair>)
 
 data class NumberColourPair(val number: Int, val colour: String)
 
-class Day02Cubes(override val filename: String) : Solver {
+class Day02Cubes(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private val games = parseGames()
 
@@ -25,24 +25,29 @@ class Day02Cubes(override val filename: String) : Solver {
         return legalGames.sumOf { game -> game.id }.toString()
     }
 
-    override fun solvePart2(): String = games.sumOf { game ->
-        val minRed = game.numberColourPairs.filter { pair -> pair.colour == "red" }.maxOf { pair -> pair.number }
-        val minGreen = game.numberColourPairs.filter { pair -> pair.colour == "green" }.maxOf { pair -> pair.number }
-        val minBlue = game.numberColourPairs.filter { pair -> pair.colour == "blue" }.maxOf { pair -> pair.number }
-        minRed * minGreen * minBlue
-    }.toString()
+    override fun solvePart2(): String = games
+        .sumOf { game ->
+            val minRed = game.numberColourPairs.filter { pair -> pair.colour == "red" }.maxOf { pair -> pair.number }
+            val minGreen = game.numberColourPairs.filter { pair -> pair.colour == "green" }.maxOf { pair -> pair.number }
+            val minBlue = game.numberColourPairs.filter { pair -> pair.colour == "blue" }.maxOf { pair -> pair.number }
+            minRed * minGreen * minBlue
+        }.toString()
 
-    private fun parseGames(): List<Game> = input.map { line -> Game(
-        id = line.substringBefore(":").substringAfter(" ").toInt(),
-        numberColourPairs = line
-            .substringAfter(":")
-            .trim()
-            .split("; ", ", ")
-            .map { numberColourPair -> NumberColourPair(
-                number = numberColourPair.substringBefore(" ").toInt(),
-                colour = numberColourPair.substringAfter(" ")
-            )}
-    )}
+    private fun parseGames(): List<Game> = input.map { line ->
+        Game(
+            id = line.substringBefore(":").substringAfter(" ").toInt(),
+            numberColourPairs = line
+                .substringAfter(":")
+                .trim()
+                .split("; ", ", ")
+                .map { numberColourPair ->
+                    NumberColourPair(
+                        number = numberColourPair.substringBefore(" ").toInt(),
+                        colour = numberColourPair.substringAfter(" ")
+                    )
+                }
+        )
+    }
 }
 
 fun main() {

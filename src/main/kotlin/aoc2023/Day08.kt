@@ -7,7 +7,7 @@ import Solver
 
 data class Node(val id: String, val left: String, val right: String)
 
-class Day08(override val filename: String) : Solver {
+class Day08(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private val instructions = input[0].split("").filter { it.isNotBlank() }
     private val nodes = input.drop(2).map { line ->
@@ -62,7 +62,7 @@ class Day08(override val filename: String) : Solver {
         for (number in stepsByNode.values) {
             answer = lcm(answer, number)
         }
-        
+
         return answer.toString()
     }
 
@@ -73,9 +73,7 @@ class Day08(override val filename: String) : Solver {
     }
 
     // https://en.wikipedia.org/wiki/Least_common_multiple#Using_the_greatest_common_divisor
-    private fun lcm(a: Long, b: Long): Long {
-        return (a * b) / gcd(a, b)
-    }
+    private fun lcm(a: Long, b: Long): Long = (a * b) / gcd(a, b)
 
 //    override fun solvePart2Bruteforce(): String {
 //        var currentNodes = nodeMap.values.filter { it.id.endsWith("A") }

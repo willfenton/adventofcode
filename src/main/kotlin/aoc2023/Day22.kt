@@ -5,16 +5,12 @@ import Solver
 
 // https://adventofcode.com/2022/day/22
 
-class Day22(override val filename: String) : Solver {
+class Day22(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
 
-    override fun solvePart1(): String {
-        return ""
-    }
+    override fun solvePart1(): String = ""
 
-    override fun solvePart2(): String {
-        return ""
-    }
+    override fun solvePart2(): String = ""
 }
 
 fun main() {

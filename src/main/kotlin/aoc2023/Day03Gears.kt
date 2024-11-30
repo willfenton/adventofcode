@@ -12,7 +12,7 @@ data class PartNumber(val number: Int, val points: List<Point>)
 
 data class Symbol(val character: String, val point: Point)
 
-class Day03Gears(override val filename: String) : Solver {
+class Day03Gears(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private val partNumbers: List<PartNumber> = parsePartNumbers()
     private val symbols: List<Symbol> = parseSymbols()
@@ -50,25 +50,27 @@ class Day03Gears(override val filename: String) : Solver {
         return gearRatioSum.toString()
     }
 
-    private fun parsePartNumbers() = input.mapIndexed { y, line ->
-        Regex("([0-9]+)").findAll(line).toList().map { match ->
-            val group = match.groups.first()
-            PartNumber(
-                number = group!!.value.toInt(),
-                points = group.range.map { x -> Point(x, y) }
-            )
-        }
-    }.flatten()
+    private fun parsePartNumbers() = input
+        .mapIndexed { y, line ->
+            Regex("([0-9]+)").findAll(line).toList().map { match ->
+                val group = match.groups.first()
+                PartNumber(
+                    number = group!!.value.toInt(),
+                    points = group.range.map { x -> Point(x, y) }
+                )
+            }
+        }.flatten()
 
-    private fun parseSymbols() = input.mapIndexed { y, line ->
-        Regex("([^0-9.])").findAll(line).toList().map { match ->
-            val group = match.groups.first()
-            Symbol(
-                character = group!!.value,
-                point = Point(group.range.first, y)
-            )
-        }
-    }.flatten()
+    private fun parseSymbols() = input
+        .mapIndexed { y, line ->
+            Regex("([^0-9.])").findAll(line).toList().map { match ->
+                val group = match.groups.first()
+                Symbol(
+                    character = group!!.value,
+                    point = Point(group.range.first, y)
+                )
+            }
+        }.flatten()
 }
 
 fun main() {

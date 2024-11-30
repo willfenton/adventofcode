@@ -16,7 +16,7 @@ enum class TileType(val string: String) {
     DownLeft("┐"),
     DownRight("┌"),
     Ground("."),
-    StartingPosition("S"),
+    StartingPosition("S")
 }
 
 data class Tile(val p: Point, val tileType: TileType) {
@@ -36,14 +36,16 @@ data class Tile(val p: Point, val tileType: TileType) {
         TileType.StartingPosition -> setOf(p.u, p.d, p.l, p.r)
     }
 
-    fun connectsTo(otherTile: Tile): Boolean {
-        return if (this.tileType == TileType.Ground && otherTile.tileType != TileType.Ground) false
-        else if (this.tileType != TileType.Ground && otherTile.tileType == TileType.Ground) false
-        else this.connectedNeighbors.contains(otherTile.p) && otherTile.connectedNeighbors.contains(this.p)
+    fun connectsTo(otherTile: Tile): Boolean = if (this.tileType == TileType.Ground && otherTile.tileType != TileType.Ground) {
+        false
+    } else if (this.tileType != TileType.Ground && otherTile.tileType == TileType.Ground) {
+        false
+    } else {
+        this.connectedNeighbors.contains(otherTile.p) && otherTile.connectedNeighbors.contains(this.p)
     }
 }
 
-class Day10(override val filename: String) : Solver {
+class Day10(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private lateinit var grid: Grid<Tile>
     private lateinit var bigGrid: Grid<Tile>
@@ -84,23 +86,26 @@ class Day10(override val filename: String) : Solver {
         return grid.values.count { it.isEnclosed && it.distanceFromStartingPoint == null }.toString()
     }
 
-    private fun parseGrid() = input.mapIndexed { y, line ->
-        line.split("").filter { it.isNotBlank() }.mapIndexed { x, s ->
-            val point = Point(x, y)
-            val tileType = when (s) {
-                "|" -> TileType.Vertical
-                "-" -> TileType.Horizontal
-                "L" -> TileType.UpRight
-                "J" -> TileType.UpLeft
-                "7" -> TileType.DownLeft
-                "F" -> TileType.DownRight
-                "." -> TileType.Ground
-                "S" -> TileType.StartingPosition
-                else -> throw Exception("bad code")
+    private fun parseGrid() = input
+        .mapIndexed { y, line ->
+            line.split("").filter { it.isNotBlank() }.mapIndexed { x, s ->
+                val point = Point(x, y)
+                val tileType = when (s) {
+                    "|" -> TileType.Vertical
+                    "-" -> TileType.Horizontal
+                    "L" -> TileType.UpRight
+                    "J" -> TileType.UpLeft
+                    "7" -> TileType.DownLeft
+                    "F" -> TileType.DownRight
+                    "." -> TileType.Ground
+                    "S" -> TileType.StartingPosition
+                    else -> throw Exception("bad code")
+                }
+                Tile(point, tileType)
             }
-            Tile(point, tileType)
-        }
-    }.flatten().associateBy { tile -> tile.p }.toMutableMap()
+        }.flatten()
+        .associateBy { tile -> tile.p }
+        .toMutableMap()
 
     private fun addExtraGroundTilesToOutsideEdges(grid: Grid<Tile>) {
         val minX = grid.keys.minOf { it.x } - 1
@@ -159,8 +164,9 @@ class Day10(override val filename: String) : Solver {
             val unvisitedNeighbors = tile.allNeighbors
                 .mapNotNull { point -> grid[point] }
                 .filter { potentialNeighbor ->
-                    potentialNeighbor.distanceFromStartingPoint == null && // not part of main loop
-                    !visited.contains(potentialNeighbor)
+                    potentialNeighbor.distanceFromStartingPoint == null &&
+                        // not part of main loop
+                        !visited.contains(potentialNeighbor)
                 }
 
             for (neighbor in unvisitedNeighbors) {
@@ -196,46 +202,54 @@ class Day10(override val filename: String) : Solver {
 
         for (tile in grid.values) {
             val threeByThree = when (tile.tileType) {
-                TileType.Vertical -> """
+                TileType.Vertical ->
+                    """
                     .|.
                     .|.
                     .|.
-                """.trimIndent()
-                TileType.Horizontal -> """
+                    """.trimIndent()
+                TileType.Horizontal ->
+                    """
                     ...
                     ---
                     ...
-                """.trimIndent()
-                TileType.UpRight -> """
+                    """.trimIndent()
+                TileType.UpRight ->
+                    """
                     .|.
                     .L-
                     ...
-                """.trimIndent()
-                TileType.UpLeft -> """
+                    """.trimIndent()
+                TileType.UpLeft ->
+                    """
                     .|.
                     -J.
                     ...
-                """.trimIndent()
-                TileType.DownLeft -> """
+                    """.trimIndent()
+                TileType.DownLeft ->
+                    """
                     ...
                     -7.
                     .|.
-                """.trimIndent()
-                TileType.DownRight -> """
+                    """.trimIndent()
+                TileType.DownRight ->
+                    """
                     ...
                     .F-
                     .|.
-                """.trimIndent()
-                TileType.Ground -> """
+                    """.trimIndent()
+                TileType.Ground ->
+                    """
                     ...
                     ...
                     ...
-                """.trimIndent()
-                TileType.StartingPosition -> """
+                    """.trimIndent()
+                TileType.StartingPosition ->
+                    """
                     .|.
                     -S-
                     .|.
-                """.trimIndent()
+                    """.trimIndent()
             }.lines()
             threeByThree.forEachIndexed { y, line ->
                 line.split("").filter { it.isNotBlank() }.forEachIndexed { x, s ->

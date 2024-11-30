@@ -11,13 +11,14 @@ data class ScratchCard(val winningNumbers: Set<String>, val numbers: List<String
     val wins: Int = numbers.count { number -> winningNumbers.contains(number) }
 }
 
-class Day04ScratchCards(override val filename: String) : Solver {
+class Day04ScratchCards(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private val scratchCards = parseScratchCards()
 
-    override fun solvePart1(): String = scratchCards.sumOf { scratchCard ->
-        (2.0).pow(scratchCard.wins - 1).toInt()
-    }.toString()
+    override fun solvePart1(): String = scratchCards
+        .sumOf { scratchCard ->
+            (2.0).pow(scratchCard.wins - 1).toInt()
+        }.toString()
 
     override fun solvePart2(): String {
         val cardCounts: MutableMap<Int, Int> = scratchCards.indices.associateWith { 1 }.toMutableMap()
@@ -30,20 +31,22 @@ class Day04ScratchCards(override val filename: String) : Solver {
         return cardCounts.values.sum().toString()
     }
 
-    private fun parseScratchCards(): List<ScratchCard> = input.map { line -> ScratchCard(
-        winningNumbers = line
-            .substringAfter(": ")
-            .substringBefore(" |")
-            .split(" ")
-            .filter { it.isNotEmpty() }
-            .map { it.trim() }
-            .toSet(),
-        numbers = line
-            .substringAfter("| ")
-            .split(" ")
-            .filter { it.isNotEmpty() }
-            .map { it.trim() }
-    )}
+    private fun parseScratchCards(): List<ScratchCard> = input.map { line ->
+        ScratchCard(
+            winningNumbers = line
+                .substringAfter(": ")
+                .substringBefore(" |")
+                .split(" ")
+                .filter { it.isNotEmpty() }
+                .map { it.trim() }
+                .toSet(),
+            numbers = line
+                .substringAfter("| ")
+                .split(" ")
+                .filter { it.isNotEmpty() }
+                .map { it.trim() }
+        )
+    }
 }
 
 fun main() {

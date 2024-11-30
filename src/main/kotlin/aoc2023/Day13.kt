@@ -6,23 +6,26 @@ import kotlin.math.min
 
 // https://adventofcode.com/2023/day/13
 
-class Day13(override val filename: String) : Solver {
+class Day13(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
     private val patterns = input.joinToString("\n").split("\n\n").map { it.lines() }
 
     override fun solvePart1(): String = patterns.sumOf { pattern -> patternValues(pattern).sum() }.toString()
 
-    override fun solvePart2(): String = patterns.sumOf { pattern ->
-        val originalValues = patternValues(pattern).toSet()
-        val xyPairs = pattern[0].indices.map { x ->
-            pattern.indices.map { y ->
-                Pair(x, y)
-            }
-        }.flatten()
-        val unsmudgedPatterns = xyPairs.map { (x, y) -> unsmudgePattern(pattern, x, y) }
-        val values = unsmudgedPatterns.map { unsmudged -> patternValues(unsmudged) }.flatten()
-        values.toSet().minus(originalValues).sum()
-    }.toString()
+    override fun solvePart2(): String = patterns
+        .sumOf { pattern ->
+            val originalValues = patternValues(pattern).toSet()
+            val xyPairs = pattern[0]
+                .indices
+                .map { x ->
+                    pattern.indices.map { y ->
+                        Pair(x, y)
+                    }
+                }.flatten()
+            val unsmudgedPatterns = xyPairs.map { (x, y) -> unsmudgePattern(pattern, x, y) }
+            val values = unsmudgedPatterns.map { unsmudged -> patternValues(unsmudged) }.flatten()
+            values.toSet().minus(originalValues).sum()
+        }.toString()
 
     private fun patternValues(pattern: List<String>): List<Long> {
         val rotatedPattern = rotatePattern(pattern)
@@ -48,10 +51,8 @@ class Day13(override val filename: String) : Solver {
         return mirrorIndices
     }
 
-    private fun rotatePattern(pattern: List<String>): List<String> {
-        return pattern[0].indices.map { i ->
-            pattern.map { line -> line[i] }.joinToString("")
-        }
+    private fun rotatePattern(pattern: List<String>): List<String> = pattern[0].indices.map { i ->
+        pattern.map { line -> line[i] }.joinToString("")
     }
 
     private fun unsmudgePattern(pattern: List<String>, x: Int, y: Int): List<String> {
