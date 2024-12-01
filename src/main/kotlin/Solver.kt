@@ -7,14 +7,13 @@ interface Solver {
     fun solvePart2(): String
 
     fun run(part1ExpectedSolution: String? = null, part2ExpectedSolution: String? = null, swallowExceptions: Boolean = false) {
-        val (solution1, duration1) =
-            measureTimedValue {
-                try {
-                    solvePart1()
-                } catch (e: Exception) {
-                    if (!swallowExceptions) throw e else "Swallowed exception"
-                }
+        val (solution1, duration1) = measureTimedValue {
+            try {
+                solvePart1()
+            } catch (e: Exception) {
+                if (!swallowExceptions) throw e else "Swallowed exception"
             }
+        }
         println("Part 1: \"${solution1}\" ($duration1)")
         if (part1ExpectedSolution != null) {
             assert(solution1 == part1ExpectedSolution)

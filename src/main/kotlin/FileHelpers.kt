@@ -5,6 +5,7 @@ import java.net.http.HttpResponse.BodyHandlers
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
+import kotlin.io.path.createParentDirectories
 import kotlin.io.path.createTempFile
 import kotlin.io.path.exists
 import kotlin.io.path.writeText
@@ -38,26 +39,27 @@ fun downloadInput(year: Int, day: Int): Path {
         return filePath
     }
 
-    // To get the cookie, download an input file and check the request headers: https://adventofcode.com/2023/day/7
+    // To get the cookie, download an input file and check the request headers: https://adventofcode.com/2024/day/1/input
     // It should look like 'session=some-string'. Copy the whole value.
     // To set this project-wide: Run configs -> Edit configurations -> Edit configuration templates
     val sessionCookie = System.getenv("AOC_SESSION_COOKIE")!!
 
-    val request =
-        HttpRequest
-            .newBuilder()
-            .uri(URI.create("https://adventofcode.com/$year/day/$day/input")) // Note: day is not padded
-            .header("Cookie", sessionCookie)
-            .header("User-Agent", "https://github.com/willfenton/adventofcode")
-            .timeout(Duration.ofSeconds(10))
-            .GET()
-            .build()
+    val request = HttpRequest
+        .newBuilder()
+        .uri(URI.create("https://adventofcode.com/$year/day/$day/input")) // Note: day is not padded
+        .header("Cookie", sessionCookie)
+        .header("User-Agent", "https://github.com/willfenton/adventofcode")
+        .timeout(Duration.ofSeconds(10))
+        .GET()
+        .build()
 
     val response = HttpClient.newHttpClient().send(request, BodyHandlers.ofString())
 
     if (response.statusCode() != 200) {
         throw Exception("Non-200 status when downloading input file: ${response.statusCode()}")
     }
+
+    filePath.createParentDirectories()
 
     filePath.writeText(response.body())
 
