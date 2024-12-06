@@ -1,12 +1,39 @@
 package aoc2023
 
-import Grid
 import InputParser
-import Point
 import Solver
 import kotlin.math.min
 
 // https://adventofcode.com/2023/day/10
+
+typealias Grid<T> = MutableMap<Day10Point, T>
+
+val <T> Grid<T>.points: List<Day10Point> get() = keys.toList()
+
+val <T> Grid<T>.minX: Int get() = keys.minOf { it.x }
+val <T> Grid<T>.maxX: Int get() = keys.maxOf { it.x }
+val <T> Grid<T>.minY: Int get() = keys.minOf { it.y }
+val <T> Grid<T>.maxY: Int get() = keys.maxOf { it.y }
+
+val <T> Grid<T>.rows: Int get() = maxX - minX + 1
+val <T> Grid<T>.columns: Int get() = maxY - minY + 1
+
+data class Day10Point(var x: Int, var y: Int) {
+    val u: Day10Point get() = Day10Point(x, y - 1)
+    val ur: Day10Point get() = Day10Point(x + 1, y - 1)
+    val r: Day10Point get() = Day10Point(x + 1, y)
+    val dr: Day10Point get() = Day10Point(x + 1, y + 1)
+    val d: Day10Point get() = Day10Point(x, y + 1)
+    val dl: Day10Point get() = Day10Point(x - 1, y + 1)
+    val l: Day10Point get() = Day10Point(x - 1, y)
+    val ul: Day10Point get() = Day10Point(x - 1, y - 1)
+
+    val cardinalNeighbors: Set<Day10Point> get() = setOf(u, r, d, l)
+    val diagonalNeighbors: Set<Day10Point> get() = setOf(ur, dr, dl, ul)
+    val allNeighbors: Set<Day10Point> get() = cardinalNeighbors + diagonalNeighbors
+
+    operator fun plus(other: Day10Point): Day10Point = Day10Point(this.x + other.x, this.y + other.y)
+}
 
 enum class TileType(val string: String) {
     Vertical("|"),
@@ -19,7 +46,7 @@ enum class TileType(val string: String) {
     StartingPosition("S")
 }
 
-data class Tile(val p: Point, val tileType: TileType) {
+data class Tile(val p: Day10Point, val tileType: TileType) {
     var distanceFromStartingPoint: Int? = null
     var isEnclosed: Boolean = true
     var smallTile: Tile? = null
@@ -72,7 +99,7 @@ class Day10(val filename: String) : Solver {
         bfsOutsideMainLoop(bigGrid)
 
         for (tile in grid.values) {
-            val bigGridTile = bigGrid[Point(tile.p.x * 3, tile.p.y * 3)]!!
+            val bigGridTile = bigGrid[Day10Point(tile.p.x * 3, tile.p.y * 3)]!!
             tile.isEnclosed = bigGridTile.isEnclosed
         }
 
@@ -89,7 +116,7 @@ class Day10(val filename: String) : Solver {
     private fun parseGrid() = input
         .mapIndexed { y, line ->
             line.split("").filter { it.isNotBlank() }.mapIndexed { x, s ->
-                val point = Point(x, y)
+                val point = Day10Point(x, y)
                 val tileType = when (s) {
                     "|" -> TileType.Vertical
                     "-" -> TileType.Horizontal
@@ -115,7 +142,7 @@ class Day10(val filename: String) : Solver {
         for (x in minX..maxX) {
             for (y in minY..maxY) {
                 if (x == minX || x == maxX || y == minY || y == maxY) {
-                    val point = Point(x, y)
+                    val point = Day10Point(x, y)
                     val tile = Tile(point, TileType.Ground)
                     tile.isEnclosed = false
                     grid[point] = tile
@@ -185,7 +212,7 @@ class Day10(val filename: String) : Solver {
         val maxY = grid.keys.maxOf { it.y } - 1
         for (y in minY..maxY) {
             for (x in minX..maxX) {
-                val tile = grid[Point(x, y)]!!
+                val tile = grid[Day10Point(x, y)]!!
                 if (tile.distanceFromStartingPoint != null || !showEnclosed) {
                     print(tile.tileType.string)
                 } else {
@@ -253,7 +280,7 @@ class Day10(val filename: String) : Solver {
             }.lines()
             threeByThree.forEachIndexed { y, line ->
                 line.split("").filter { it.isNotBlank() }.forEachIndexed { x, s ->
-                    val point = Point((tile.p.x * 3) + x, (tile.p.y * 3) + y)
+                    val point = Day10Point((tile.p.x * 3) + x, (tile.p.y * 3) + y)
                     val tileType = when (s) {
                         "|" -> TileType.Vertical
                         "-" -> TileType.Horizontal

@@ -7,13 +7,13 @@ import java.nio.file.Path
 
 // https://adventofcode.com/2024/day/6
 
-enum class Direction(val x: Int, val y: Int) {
+enum class Day6Direction(val x: Int, val y: Int) {
     UP(0, -1),
     DOWN(0, 1),
     LEFT(-1, 0),
     RIGHT(1, 0);
 
-    fun rotate(): Direction = when (this) {
+    fun rotate(): Day6Direction = when (this) {
         UP -> RIGHT
         DOWN -> LEFT
         LEFT -> UP
@@ -29,14 +29,14 @@ class Day06(file: Path) : Solver {
 
     private var guardY: Int = 0
     private var guardX: Int = 0
-    private lateinit var guardDirection: Direction
+    private lateinit var guardDirection: Day6Direction
     private lateinit var obstacles: MutableSet<Pair<Int, Int>>
     private lateinit var guardVisited: MutableSet<Pair<Int, Int>>
 
     private fun init() {
         guardY = input.indexOfFirst { it.contains("^") }
         guardX = input[guardY].indexOfFirst { it == '^' }
-        guardDirection = Direction.UP
+        guardDirection = Day6Direction.UP
         obstacles = mutableSetOf()
         guardVisited = mutableSetOf(guardX to guardY)
 
@@ -91,7 +91,7 @@ class Day06(file: Path) : Solver {
 
                 obstacles.add(x to y)
 
-                val visited: MutableSet<Triple<Int, Int, Direction>> = mutableSetOf(Triple(guardX, guardY, guardDirection))
+                val visited: MutableSet<Triple<Int, Int, Day6Direction>> = mutableSetOf(Triple(guardX, guardY, guardDirection))
 
                 while (true) {
                     if (!step()) {

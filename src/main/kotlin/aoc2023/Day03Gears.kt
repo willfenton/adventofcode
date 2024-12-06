@@ -6,11 +6,11 @@ import kotlin.math.abs
 
 // https://adventofcode.com/2023/day/3
 
-data class Point(val x: Int, val y: Int)
+data class Day3Point(val x: Int, val y: Int)
 
-data class PartNumber(val number: Int, val points: List<Point>)
+data class PartNumber(val number: Int, val points: List<Day3Point>)
 
-data class Symbol(val character: String, val point: Point)
+data class Symbol(val character: String, val point: Day3Point)
 
 class Day03Gears(val filename: String) : Solver {
     private val input = InputParser.parseLines(filename)
@@ -56,7 +56,7 @@ class Day03Gears(val filename: String) : Solver {
                 val group = match.groups.first()
                 PartNumber(
                     number = group!!.value.toInt(),
-                    points = group.range.map { x -> Point(x, y) }
+                    points = group.range.map { x -> Day3Point(x, y) }
                 )
             }
         }.flatten()
@@ -67,7 +67,7 @@ class Day03Gears(val filename: String) : Solver {
                 val group = match.groups.first()
                 Symbol(
                     character = group!!.value,
-                    point = Point(group.range.first, y)
+                    point = Day3Point(group.range.first, y)
                 )
             }
         }.flatten()
