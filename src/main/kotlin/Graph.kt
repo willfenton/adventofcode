@@ -4,7 +4,7 @@ class DirectedWeightedGraph<T> {
     val nodesToEdges: MutableMap<T, MutableSet<Edge<T>>> = mutableMapOf()
 
     fun addNode(node: T) {
-        if (!nodesToEdges.containsKey(node)) {
+        if (node !in nodesToEdges.keys) {
             nodesToEdges[node] = mutableSetOf()
         }
     }
@@ -24,11 +24,31 @@ fun <T> bfs(graph: DirectedWeightedGraph<T>, startingNode: T) {
         val current = queue.removeFirst()
 
         val edges = graph.nodesToEdges[current]!!
-        val unvisitedNeighbors = edges.map { edge -> edge.dest }.filter { neighbor -> !visited.contains(neighbor) }
+        val unvisitedNeighbors = edges.map { edge -> edge.dest }.filter { neighbor -> neighbor !in visited }
 
         for (neighbor in unvisitedNeighbors) {
             visited.add(neighbor)
             queue.add(neighbor)
+        }
+    }
+}
+
+fun <T> dfs(graph: DirectedWeightedGraph<T>, startingNode: T) {
+    val stack = mutableListOf(startingNode)
+    val visited = mutableSetOf<T>()
+
+    while (stack.isNotEmpty()) {
+        val current = stack.removeLast()
+
+        if (current !in visited) {
+            visited.add(current)
+
+            val edges = graph.nodesToEdges[current]!!
+            val unvisitedNeighbors = edges.map { edge -> edge.dest }.filter { neighbor -> neighbor !in visited }
+
+            for (neighbor in unvisitedNeighbors) {
+                stack.addLast(neighbor)
+            }
         }
     }
 }
@@ -46,7 +66,7 @@ fun <T> dijkstra(graph: DirectedWeightedGraph<T>, startingNode: T): Pair<Mutable
 
         visited.add(current)
 
-        val edges = graph.nodesToEdges[current]!!.filter { !visited.contains(it.dest) }
+        val edges = graph.nodesToEdges[current]!!.filter { it.dest !in visited }
 
         for (edge in edges) {
             val currentDistance = distances[edge.dest]
@@ -56,7 +76,7 @@ fun <T> dijkstra(graph: DirectedWeightedGraph<T>, startingNode: T): Pair<Mutable
                 previous[edge.dest] = current
             }
 
-            if (!queue.contains(edge.dest)) {
+            if (edge.dest !in queue) {
                 queue.add(edge.dest)
             }
         }

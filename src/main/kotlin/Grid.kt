@@ -114,7 +114,7 @@ fun <T> bfs(grid: Grid<T>, startingPosition: Position) {
 
         val currentCell = grid[currentPos]!!
         val connectedNeighbors = currentCell.connectedNeighbors(neighborDirections, isConnected)
-        val unvisitedNeighbors = connectedNeighbors.filter { !visited.contains(it.pos) }
+        val unvisitedNeighbors = connectedNeighbors.filter { it.pos !in visited }
 
         for (neighbor in unvisitedNeighbors) {
             queue.add(neighbor.pos)
