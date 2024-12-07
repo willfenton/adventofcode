@@ -1,3 +1,7 @@
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 enum class Direction(val position: Position) {
     UP(Position(0, -1)),
     DOWN(Position(0, 1)),
@@ -37,6 +41,14 @@ data class Position(val x: Int, val y: Int) {
     fun neighbor(direction: Direction): Position = this + direction.position
 
     fun neighbors(directions: List<Direction> = Direction.CARDINAL) = directions.map { direction -> neighbor(direction) }
+
+    fun euclideanDistance(other: Position): Double {
+        val distX = (this.x - other.x).toDouble()
+        val distY = (this.y - other.y).toDouble()
+        return sqrt(distX.pow(2.0) + distY.pow(2.0))
+    }
+
+    fun taxicabDistance(other: Position) = abs(this.x - other.x) + abs(this.y - other.y)
 }
 
 class Grid<T> {
@@ -93,22 +105,21 @@ fun <T> bfs(grid: Grid<T>, startingPosition: Position) {
     val neighborDirections = Direction.CARDINAL
     val isConnected: (cell: GridCell<T>, other: GridCell<T>) -> Boolean = { cell, other -> true }
 
-    val visited: MutableSet<Position> = mutableSetOf()
+    val visited: MutableSet<Position> = mutableSetOf(startingPosition)
     val queue: MutableList<Position> = mutableListOf(startingPosition)
+    val previous = mutableMapOf<Position, Position>()
 
     while (queue.isNotEmpty()) {
         val currentPos = queue.removeFirst()
+
         val currentCell = grid[currentPos]!!
-
-        visited.add(currentPos)
-
         val connectedNeighbors = currentCell.connectedNeighbors(neighborDirections, isConnected)
         val unvisitedNeighbors = connectedNeighbors.filter { !visited.contains(it.pos) }
 
         for (neighbor in unvisitedNeighbors) {
-            if (!queue.contains(neighbor.pos)) {
-                queue.add(neighbor.pos)
-            }
+            queue.add(neighbor.pos)
+            visited.add(neighbor.pos)
+            previous[neighbor.pos] = currentPos
         }
     }
 }
