@@ -35,8 +35,10 @@ enum class Direction(val position: Position) {
     }
 }
 
-data class Position(val x: Int, val y: Int) {
+data class Position(var x: Int, var y: Int) {
     operator fun plus(other: Position): Position = Position(this.x + other.x, this.y + other.y)
+
+    operator fun minus(other: Position): Position = Position(this.x - other.x, this.y - other.y)
 
     fun neighbor(direction: Direction): Position = this + direction.position
 
@@ -68,12 +70,12 @@ class Grid<T> {
         minY = cells.keys.minOf { it.y }
         maxY = cells.keys.maxOf { it.y }
 
-        width = maxX - minX
-        height = maxY - minY
+        width = (maxX - minX) + 1
+        height = (maxY - minY) + 1
     }
 
     operator fun set(position: Position, data: T) {
-        cells[position] = GridCell(position, data)
+        cells[position] = GridCell(position, data, this)
     }
 
     operator fun get(position: Position): GridCell<T>? = cells[position]
