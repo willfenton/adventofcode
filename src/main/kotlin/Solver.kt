@@ -16,6 +16,7 @@ interface Solver {
         }
         println("Part 1: \"${solution1}\" ($duration1)")
         if (part1ExpectedSolution != null) {
+            // Need to enable assertions for this to work (`-ea`)
             assert(solution1 == part1ExpectedSolution)
             println("Test passed")
         } else {
@@ -32,6 +33,7 @@ interface Solver {
             }
         println("Part 2: \"${solution2}\" ($duration2)")
         if (part2ExpectedSolution != null) {
+            // Need to enable assertions for this to work (`-ea`)
             assert(solution2 == part2ExpectedSolution)
             println("Test passed")
         } else {
