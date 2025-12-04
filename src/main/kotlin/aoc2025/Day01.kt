@@ -7,7 +7,7 @@ import java.nio.file.Path
 
 // https://adventofcode.com/2025/day/1
 
-enum class Direction {
+enum class Day01Direction {
     LEFT,
     RIGHT
 }
@@ -17,9 +17,9 @@ class Day01(file: Path) : Solver {
 
     private val pairs = input.map { line ->
         if (line.startsWith("L")) {
-            Pair(Direction.LEFT, line.substringAfter("L").toInt())
+            Pair(Day01Direction.LEFT, line.substringAfter("L").toInt())
         } else {
-            Pair(Direction.RIGHT, line.substringAfter("R").toInt())
+            Pair(Day01Direction.RIGHT, line.substringAfter("R").toInt())
         }
     }
 
@@ -28,8 +28,8 @@ class Day01(file: Path) : Solver {
         var zeroCount = 0
         for ((direction, amount) in pairs) {
             dial = when (direction) {
-                Direction.LEFT -> (dial - amount) % 100
-                Direction.RIGHT -> (dial + amount) % 100
+                Day01Direction.LEFT -> (dial - amount) % 100
+                Day01Direction.RIGHT -> (dial + amount) % 100
             }
             if (dial == 0) {
                 zeroCount += 1
@@ -45,8 +45,8 @@ class Day01(file: Path) : Solver {
         for ((direction, amount) in pairs) {
             repeat(amount) {
                 dial = when (direction) {
-                    Direction.LEFT -> (dial - 1) % 100
-                    Direction.RIGHT -> (dial + 1) % 100
+                    Day01Direction.LEFT -> (dial - 1) % 100
+                    Day01Direction.RIGHT -> (dial + 1) % 100
                 }
                 if (dial == 0) {
                     zeroCount += 1

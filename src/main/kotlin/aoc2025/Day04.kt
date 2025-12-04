@@ -9,7 +9,7 @@ import java.nio.file.Path
 
 // https://adventofcode.com/2025/day/4
 
-enum class Tile {
+enum class Day04Tile {
     EMPTY,
     PAPER
 }
@@ -17,7 +17,7 @@ enum class Tile {
 class Day04(file: Path) : Solver {
     private val input = InputParser.parseLines(file.toString())
 
-    private val grid = Grid<Tile>()
+    private val grid = Grid<Day04Tile>()
 
     // number of papers removed at each step
     private val papersRemoved = mutableListOf<Int>()
@@ -27,8 +27,8 @@ class Day04(file: Path) : Solver {
             val line = input[y]
             for (x in line.indices) {
                 val tile = when (input[y][x]) {
-                    '.' -> Tile.EMPTY
-                    '@' -> Tile.PAPER
+                    '.' -> Day04Tile.EMPTY
+                    '@' -> Day04Tile.PAPER
                     else -> throw IllegalArgumentException()
                 }
                 grid[Position(x, y)] = tile
@@ -42,13 +42,13 @@ class Day04(file: Path) : Solver {
     }
 
     private fun removePaper(): Int {
-        val paperCells = grid.cells.values.filter { it.data == Tile.PAPER }
+        val paperCells = grid.cells.values.filter { it.data == Day04Tile.PAPER }
         val cellsToRemove = paperCells.filter { gridCell ->
             val neighbors = gridCell.neighbors(directions = Direction.ALL)
-            neighbors.count { it.data == Tile.PAPER } < 4
+            neighbors.count { it.data == Day04Tile.PAPER } < 4
         }
         cellsToRemove.forEach { gridCell ->
-            gridCell.data = Tile.EMPTY
+            gridCell.data = Day04Tile.EMPTY
         }
         return cellsToRemove.size
     }
