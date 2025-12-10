@@ -12,7 +12,8 @@ data class Machine(
     val buttons: List<List<Int>>,
     val joltageRequirements: List<Int>,
     val currentState: List<Boolean>,
-    val joltageCounters: List<Int>
+    val joltageCounters: List<Int>,
+    val buttonPresses: Int = 0
 ) {
     fun pressAllButtons(): List<Machine> {
         return buttons.map { button ->
@@ -25,22 +26,23 @@ data class Machine(
     }
 
     fun pressAllJoltageButtonsWithPruning(): List<Machine> {
-        return buttons.mapNotNull { button ->
+        return buttons.map { button ->
             val newState = joltageCounters.toMutableList()
-            var isValid = true
+            val maxPresses = button.minOf { joltageRequirements[it] - newState[it] }
             for (i in button) {
-                newState[i] = newState[i] + 1
-                if (newState[i] > joltageRequirements[i]) {
-                    isValid = false
-                }
+                newState[i] = newState[i] + maxPresses
             }
-            if (isValid) this.copy(joltageCounters = newState) else null
+            val newButtons = buttons.toMutableList()
+            newButtons.remove(button)
+            this.copy(buttons = newButtons, joltageCounters = newState, buttonPresses = buttonPresses + maxPresses)
         }
     }
 
     fun isSolved(): Boolean = currentState == targetState
 
     fun isJoltageSolved(): Boolean = joltageCounters == joltageRequirements
+
+    val joltageInfo: String = "${joltageRequirements}, ${joltageCounters}, ${buttonPresses}, $buttons"
 }
 
 class Day10(file: Path) : Solver {
@@ -69,7 +71,7 @@ class Day10(file: Path) : Solver {
         println()
 
         Machine(targetState, buttons, joltageRequirements, currentState = targetState.map { false }, joltageCounters = joltageRequirements.map { 0 })
-    }
+    }.sortedBy { it.buttons.size }
 
     private fun minButtonPresses(machine: Machine): Int {
         var iteration = 0
@@ -86,23 +88,31 @@ class Day10(file: Path) : Solver {
         }
     }
 
-    private fun minJoltagePresses(machine: Machine): Int {
-        var iteration = 0
-        var machines = listOf(machine)
+    // TODO should never return null
+    private fun minJoltagePresses(machine: Machine): Int? {
+        println(machine)
+        val unsolvedMachines = mutableListOf(machine)
+        val solvedMachines = mutableListOf<Machine>()
 
-        while (true) {
-            println(iteration)
-            println(machines.size)
-            println()
-
-            for (m in machines) {
-                if (m.isJoltageSolved()) {
-                    return iteration
-                }
+        while (unsolvedMachines.isNotEmpty()) {
+//            println(machine.joltageInfo)
+            val machine = unsolvedMachines.removeLast()
+            if (machine.isJoltageSolved()) {
+                solvedMachines.add(machine)
+            } else {
+                unsolvedMachines.addAll(machine.pressAllJoltageButtonsWithPruning())
             }
-            iteration += 1
-            machines = machines.map { it.pressAllJoltageButtonsWithPruning() }.flatten()
+//            for (m in machines) {
+//                if (m.isJoltageSolved()) {
+//                    solvedMachines.add(m)
+//                }
+//            }
+//            machines = machines.map { it.pressAllJoltageButtonsWithPruning() }.flatten()
         }
+
+        println(solvedMachines.minOfOrNull { it.buttonPresses })
+        println()
+        return solvedMachines.minOfOrNull { it.buttonPresses }
     }
 
     override fun solvePart1(): String {
@@ -110,7 +120,8 @@ class Day10(file: Path) : Solver {
     }
 
     override fun solvePart2(): String {
-        return machines.sumOf { machine -> minJoltagePresses(machine) }.toString()
+        //return minJoltagePresses(Machine(targetState=listOf(false, true, true, true, true, true, false, false, true, true), buttons=listOf(listOf(0, 1, 3, 4, 5, 6, 8, 9), listOf(0, 2, 3, 4, 6, 7, 8, 9), listOf(9), listOf(0, 1, 2, 6, 7), listOf(4, 5), listOf(1, 2, 5, 8, 9), listOf(1, 5, 6, 8), listOf(0, 3, 5, 9), listOf(0, 1, 2, 5, 7, 8), listOf(0, 3, 5, 8)), joltageRequirements=listOf(56, 49, 25, 47, 23, 67, 40, 13, 63, 54), currentState=listOf(false, false, false, false, false, false, false, false, false, false), joltageCounters=listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), buttonPresses=0)).toString()
+        return machines.sumOf { machine -> minJoltagePresses(machine) ?: 0 }.toString()
     }
 }
 
