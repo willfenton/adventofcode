@@ -10,10 +10,7 @@ import java.nio.file.Path
 data class Machine(
     val targetState: List<Boolean>,
     val buttons: List<List<Int>>,
-    val joltageRequirements: List<Int>,
-    val currentState: List<Boolean>,
-    val joltageCounters: List<Int>,
-    val buttonPresses: Int = 0
+    val currentState: List<Boolean>
 ) {
     fun pressAllButtons(): List<Machine> {
         return buttons.map { button ->
@@ -25,24 +22,7 @@ data class Machine(
         }
     }
 
-    fun pressAllJoltageButtonsWithPruning(): List<Machine> {
-        return buttons.map { button ->
-            val newState = joltageCounters.toMutableList()
-            val maxPresses = button.minOf { joltageRequirements[it] - newState[it] }
-            for (i in button) {
-                newState[i] = newState[i] + maxPresses
-            }
-            val newButtons = buttons.toMutableList()
-            newButtons.remove(button)
-            this.copy(buttons = newButtons, joltageCounters = newState, buttonPresses = buttonPresses + maxPresses)
-        }
-    }
-
     fun isSolved(): Boolean = currentState == targetState
-
-    fun isJoltageSolved(): Boolean = joltageCounters == joltageRequirements
-
-    val joltageInfo: String = "${joltageRequirements}, ${joltageCounters}, ${buttonPresses}, $buttons"
 }
 
 class Day10(file: Path) : Solver {
@@ -63,15 +43,12 @@ class Day10(file: Path) : Solver {
             .split(" ")
             .map { s -> s.split(",").map { it.toInt() } }
 
-        val joltageRequirements = line.substringAfter("{").substringBefore("}").split(",").map { it.toInt() }
-
         println(targetState)
         println(buttons)
-        println(joltageRequirements)
         println()
 
-        Machine(targetState, buttons, joltageRequirements, currentState = targetState.map { false }, joltageCounters = joltageRequirements.map { 0 })
-    }.sortedBy { it.buttons.size }
+        Machine(targetState, buttons, currentState = targetState.map { false })
+    }
 
     private fun minButtonPresses(machine: Machine): Int {
         var iteration = 0
@@ -88,40 +65,12 @@ class Day10(file: Path) : Solver {
         }
     }
 
-    // TODO should never return null
-    private fun minJoltagePresses(machine: Machine): Int? {
-        println(machine)
-        val unsolvedMachines = mutableListOf(machine)
-        val solvedMachines = mutableListOf<Machine>()
-
-        while (unsolvedMachines.isNotEmpty()) {
-//            println(machine.joltageInfo)
-            val machine = unsolvedMachines.removeLast()
-            if (machine.isJoltageSolved()) {
-                solvedMachines.add(machine)
-            } else {
-                unsolvedMachines.addAll(machine.pressAllJoltageButtonsWithPruning())
-            }
-//            for (m in machines) {
-//                if (m.isJoltageSolved()) {
-//                    solvedMachines.add(m)
-//                }
-//            }
-//            machines = machines.map { it.pressAllJoltageButtonsWithPruning() }.flatten()
-        }
-
-        println(solvedMachines.minOfOrNull { it.buttonPresses })
-        println()
-        return solvedMachines.minOfOrNull { it.buttonPresses }
-    }
-
     override fun solvePart1(): String {
         return machines.sumOf { machine -> minButtonPresses(machine) }.toString()
     }
 
     override fun solvePart2(): String {
-        //return minJoltagePresses(Machine(targetState=listOf(false, true, true, true, true, true, false, false, true, true), buttons=listOf(listOf(0, 1, 3, 4, 5, 6, 8, 9), listOf(0, 2, 3, 4, 6, 7, 8, 9), listOf(9), listOf(0, 1, 2, 6, 7), listOf(4, 5), listOf(1, 2, 5, 8, 9), listOf(1, 5, 6, 8), listOf(0, 3, 5, 9), listOf(0, 1, 2, 5, 7, 8), listOf(0, 3, 5, 8)), joltageRequirements=listOf(56, 49, 25, 47, 23, 67, 40, 13, 63, 54), currentState=listOf(false, false, false, false, false, false, false, false, false, false), joltageCounters=listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), buttonPresses=0)).toString()
-        return machines.sumOf { machine -> minJoltagePresses(machine) ?: 0 }.toString()
+        TODO()
     }
 }
 
